@@ -52,9 +52,9 @@ class GameObject:
         color: tuple[int, int, int] | None = None
     ) -> None:
         """Отрисовывает одну ячейку сетки игрового поля."""
-        pos = position if position is not None else self.position
-        cell_color = color if color is not None else self.body_color
-        rect = pygame.Rect(pos, (GRID_SIZE, GRID_SIZE))
+        target_position = position or self.position
+        cell_color = color or self.body_color
+        rect = pygame.Rect(target_position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, cell_color, rect)
         if cell_color != BOARD_BACKGROUND_COLOR:
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
@@ -85,12 +85,12 @@ class Apple(GameObject):
         """Устанавливает случайное положение яблока на игровом поле."""
         occupied = occupied_positions or []
         while True:
-            new_pos = (
+            new_position = (
                 randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                 randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
             )
-            if new_pos not in occupied:
-                self.position = new_pos
+            if new_position not in occupied:
+                self.position = new_position
                 break
 
     def draw(self) -> None:
@@ -135,9 +135,9 @@ class Snake(GameObject):
     def move(self) -> None:
         """Обновляет позицию змейки, перемещая её на одну клетку."""
         head_x, head_y = self.get_head_position()
-        dx, dy = self.direction
-        new_x = (head_x + dx * GRID_SIZE) % SCREEN_WIDTH
-        new_y = (head_y + dy * GRID_SIZE) % SCREEN_HEIGHT
+        delta_x, delta_y = self.direction
+        new_x = (head_x + delta_x * GRID_SIZE) % SCREEN_WIDTH
+        new_y = (head_y + delta_y * GRID_SIZE) % SCREEN_HEIGHT
         new_head = (new_x, new_y)
 
         self.positions.insert(0, new_head)
